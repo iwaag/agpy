@@ -8,4 +8,6 @@ Requires-Dist: httpx
 Requires-Dist: cryptography
 Requires-Dist: PyJWT
 Requires-Dist: fastapi
+Requires-Dist: hatchet_sdk
 Dynamic: license-file
+ 
