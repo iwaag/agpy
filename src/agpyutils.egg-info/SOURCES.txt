@@ -8,7 +8,9 @@ src/agpyutils.egg-info/SOURCES.txt
 src/agpyutils.egg-info/dependency_links.txt
 src/agpyutils.egg-info/requires.txt
 src/agpyutils.egg-info/top_level.txt
+src/agpyutils/task/__init__.py
 src/agpyutils/task/hub.py
+src/agpyutils/task/main.py
 src/agpyutils/task/models.py
 src/agpyutils/task/hatchet/hub.py
 src/agpyutils/task/hatchet/workflows/basic.py
