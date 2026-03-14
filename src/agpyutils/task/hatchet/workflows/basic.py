@@ -7,7 +7,7 @@ hatchet = Hatchet()
 
 @hatchet.durable_task(name="labor", input_validator=models.Task_UnmanagedLabor)
 async def task_unmanaged_labor(input: models.Task_UnmanagedLabor, context: DurableContext) -> dict[str, str]:
-    pass
+    print("dummy")
     # try:
     #     revent = context.aio_sleep_for(input.wait_for)
     #     return {"status": "success",}
