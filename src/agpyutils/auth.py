@@ -2,18 +2,23 @@ from dataclasses import dataclass
 import json
 import os
 import time
-from typing import Optional, Tuple
+from typing import Optional, Any
 
 import httpx
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+CLIEND_ID=os.get_env("CLIEND_ID")
+KEYCLOAK_CLIENT_SECRET=os.get_env("KEYCLOAK_CLIENT_SECRET")
 
 KEYCLOAK_URL = os.getenv("KEYCLOAK_URL", "http://localhost:8080")
 KEYCLOAK_REALM = os.getenv("KEYCLOAK_REALM", "default_realm")
 KEYCLOAK_ISSUER = os.getenv(
     "KEYCLOAK_ISSUER",
     f"{KEYCLOAK_URL}/realms/{KEYCLOAK_REALM}",
+)
+KEYCLOAK_TOKEN_ENDPOINT: str = (
+    f"{KEYCLOAK_ISSUER}/protocol/openid-connect/token"
 )
 KEYCLOAK_AUDIENCE = os.getenv("KEYCLOAK_AUDIENCE", "").strip()
 JWKS_CACHE_SECONDS = int(os.getenv("JWKS_CACHE_SECONDS", "300"))
@@ -106,3 +111,51 @@ async def get_auth_info(
     
     return AuthInfo(user_id=user_id, client_id=client_id, token = token)
     
+
+
+class KeycloakAuthError(RuntimeError):
+    pass
+
+
+async def exchange_token_for_own_client(
+    subject_token: str,
+    timeout_seconds: float = 5.0,
+) -> dict[str, Any]:
+    if not CLIEND_ID:
+        raise KeycloakAuthError("CLIENT_ID is not configured")
+
+    form_data = {
+        "grant_type": "urn:ietf:params:oauth:grant-type:token-exchange",
+        "client_id": CLIEND_ID,
+        "subject_token": subject_token,
+        "subject_token_type": "urn:ietf:params:oauth:token-type:access_token",
+        "requested_token_type": "urn:ietf:params:oauth:token-type:access_token",
+    }
+    if KEYCLOAK_CLIENT_SECRET:
+        form_data["client_secret"] = KEYCLOAK_CLIENT_SECRET
+
+    async with httpx.AsyncClient(timeout=timeout_seconds) as client:
+        response = await client.post(KEYCLOAK_TOKEN_ENDPOINT, data=form_data)
+
+    if response.status_code >= 400:
+        raise KeycloakAuthError(
+            f"Token exchange failed ({response.status_code}): {response.text}"
+        )
+
+    payload = response.json()
+    access_token = payload.get("access_token")
+    if not access_token:
+        raise KeycloakAuthError("Keycloak response did not contain access_token")
+
+    return payload
+
+
+async def issue_own_client_access_token(
+    subject_token: str,
+    timeout_seconds: float = 5.0,
+) -> str:
+    token_response = await exchange_token_for_own_client(
+        subject_token=subject_token,
+        timeout_seconds=timeout_seconds,
+    )
+    return token_response["access_token"]
