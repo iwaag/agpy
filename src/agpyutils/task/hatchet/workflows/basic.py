@@ -10,5 +10,5 @@ async def task_unmanaged_labor(input: models.Task_UnmanagedLabor, context: Durab
     print("dummy")
 
 @hatchet.durable_task(name="labor_auth", input_validator=models.Task_UnmanagedLabor)
-async def task_labor_oath(input: models.Task_UnmanagedLabor, context: DurableContext) -> dict[str, str]:
+async def task_labor_auth(input: models.Task_UnmanagedLabor, context: DurableContext) -> dict[str, str]:
     print("dummy")
