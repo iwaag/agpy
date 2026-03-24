@@ -2,12 +2,13 @@ from dataclasses import dataclass
 import json
 import os
 import time
-from typing import Optional, Any
+from typing import Optional
 
 import httpx
 import jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from pydantic import BaseModel
 CLIENT_ID=os.getenv("CLIENT_ID")
 KEYCLOAK_CLIENT_SECRET=os.getenv("KEYCLOAK_CLIENT_SECRET")
 
@@ -22,6 +23,17 @@ KEYCLOAK_TOKEN_ENDPOINT: str = (
 )
 KEYCLOAK_AUDIENCE = os.getenv("KEYCLOAK_AUDIENCE", "").strip()
 JWKS_CACHE_SECONDS = int(os.getenv("JWKS_CACHE_SECONDS", "300"))
+
+class TokenExchangeResponse(BaseModel):
+    access_token: str
+    token_type: str
+    expires_in: int
+    refresh_token: Optional[str] = None
+    refresh_expires_in: Optional[int] = None
+    scope: Optional[str] = None
+    session_state: Optional[str] = None
+    not_before_policy: Optional[int] = None
+
 
 _bearer_scheme = HTTPBearer(auto_error=True)
 _jwks_cache: Optional[dict] = None
@@ -123,7 +135,7 @@ class KeycloakAuthError(RuntimeError):
 async def exchange_token_for_own_client(
     subject_token: str,
     timeout_seconds: float = 5.0,
-) -> dict[str, Any]:
+) -> TokenExchangeResponse:
     if not CLIENT_ID:
         raise KeycloakAuthError("CLIENT_ID is not configured")
 
@@ -145,12 +157,7 @@ async def exchange_token_for_own_client(
             f"Token exchange failed ({response.status_code}): {response.text}"
         )
 
-    payload = response.json()
-    access_token = payload.get("access_token")
-    if not access_token:
-        raise KeycloakAuthError("Keycloak response did not contain access_token")
-
-    return payload
+    return TokenExchangeResponse.model_validate(response.json())
 
 
 async def issue_own_client_access_token(
