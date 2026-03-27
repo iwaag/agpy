@@ -8,7 +8,7 @@ resolution-markers = [
 
 [[package]]
 name = "agpy"
-version = "0.1.40"
+version = "0.1.41"
 source = { editable = "." }
 dependencies = [
     { name = "cryptography" },

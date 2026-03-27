@@ -6,6 +6,11 @@ src/agpy/config.py
 src/agpy/database.py
 src/agpy/schema.py
 src/agpy/storage.py
+src/agpy.egg-info/PKG-INFO
+src/agpy.egg-info/SOURCES.txt
+src/agpy.egg-info/dependency_links.txt
+src/agpy.egg-info/requires.txt
+src/agpy.egg-info/top_level.txt
 src/agpy/contracts/__init__.py
 src/agpy/contracts/agcore/__init__.py
 src/agpy/contracts/agcore/mission.py
@@ -18,8 +23,3 @@ src/agpy/task/hub.py
 src/agpy/task/models.py
 src/agpy/task/hatchet/hub.py
 src/agpy/task/hatchet/workflows/basic.py
-src/agpyutils.egg-info/PKG-INFO
-src/agpyutils.egg-info/SOURCES.txt
-src/agpyutils.egg-info/dependency_links.txt
-src/agpyutils.egg-info/requires.txt
-src/agpyutils.egg-info/top_level.txt
