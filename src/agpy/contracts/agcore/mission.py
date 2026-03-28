@@ -6,7 +6,7 @@ import httpx
 from pydantic import BaseModel, Field
 
 from agpy.auth import AuthInfo
-from agpy.services.agcore.mission import AGCORE_API_URL
+from agpy.clients.agcore.mission import AGCORE_API_URL
 
 class MissionInfo(BaseModel):
     id: str
