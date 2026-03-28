@@ -3,7 +3,7 @@ from agpy.contracts.agcore.mission import (
     MissionStartRequest
 )
 
-from agpy.auth import AuthInfo
+from agpy.clients.auth.jwt import AuthInfo
 
 async def start_mission(request: MissionStartRequest, AuthInfo: AuthInfo) -> MissionInfo:
     pass

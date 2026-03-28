@@ -1,6 +1,6 @@
 from sqlalchemy import Engine
 from sqlmodel import create_engine
-from agpy.config import get_database_settings
+from agpy.clients.db.config import get_database_settings
 
 def get_engine() -> Engine:
     global _engine
