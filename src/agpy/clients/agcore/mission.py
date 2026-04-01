@@ -14,13 +14,13 @@ from agpy.contracts.agcore.mission import (
 from agpy.contracts.auth.jwt import AuthInfo
 
 AGCORE_API_URL=os.getenv("AGCORE_API_URL")
-async def get_mission(mission_id: str, auth_info: AuthInfo) -> MissionListInfo:
+async def get_mission(mission_id: str, auth_info: AuthInfo) -> MissionInfo:
     async with httpx.AsyncClient(timeout=5.0) as client:
         response = await client.post(
             AGCORE_API_URL + f"/mission/get/{mission_id}",
             headers={"authorization": "bearer " + auth_info.token}
         )
-        return MissionListInfo.model_validate(response.json())
+        return MissionInfo.model_validate(response.json())
 
 async def create_mission(request: MissionCreateRequest, auth_info: AuthInfo) -> MissionInfo:
     pass
